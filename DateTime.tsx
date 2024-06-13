@@ -4,6 +4,7 @@ import { inputValidator } from "../../../../library/utilities/helperFunction";
 import { IFormFieldType } from "../../../../library/utilities/constant";
 import { IFormProps } from "../formInterface/forms.model";
 import { FormFieldError } from "../formFieldError/FormFieldError";
+import { useTranslation } from "react-i18next";
 
 const DateTime = (props: IFormProps) => {
   const { attribute, form, appendTo, fieldType } = props;
@@ -13,7 +14,8 @@ const DateTime = (props: IFormProps) => {
     control,
     formState: { errors },
   } = useFormContext();
-
+  const { t } = useTranslation();
+  const defaultPlaceHolder: string = t("components.multiSelect.placeholder");
   const minDateValue = minDate ? new Date(Number(minDate)) : undefined;
   const maxDateValue = maxDate ? new Date(Number(maxDate)) : undefined;
 
@@ -78,7 +80,7 @@ const DateTime = (props: IFormProps) => {
                 }}
                 dateFormat="yy-mm-dd"
                 showIcon
-                placeholder={placeholder}
+                placeholder={placeholder || defaultPlaceHolder}
                 minDate={minDateValue}
                 maxDate={maxDateValue}
                 appendTo={appendTo}
