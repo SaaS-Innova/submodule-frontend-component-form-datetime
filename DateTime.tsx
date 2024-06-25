@@ -9,7 +9,12 @@ import { useTranslation } from "react-i18next";
 const DateTime = (props: IFormProps) => {
   const { attribute, form, appendTo, fieldType } = props;
   const { label, minDate, maxDate, placeholder } = form[attribute];
-  const { required, showTime = true, disabled } = form[attribute].rules;
+  const {
+    required,
+    showTime = true,
+    disabled,
+    showIcon = true,
+  } = form[attribute].rules;
   const {
     control,
     formState: { errors },
@@ -79,7 +84,7 @@ const DateTime = (props: IFormProps) => {
                   field.onChange(timeStamp);
                 }}
                 dateFormat="yy-mm-dd"
-                showIcon
+                showIcon={showIcon}
                 placeholder={placeholder || defaultPlaceHolder}
                 minDate={minDateValue}
                 maxDate={maxDateValue}
