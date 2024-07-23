@@ -14,7 +14,9 @@ const DateTime = (props: IFormProps) => {
     showTime = true,
     disabled,
     showIcon = true,
+    dateView,
   } = form[attribute].rules;
+  const { view = "date", format = "yy-mm-dd" } = dateView || {};
   const {
     control,
     formState: { errors },
@@ -83,13 +85,14 @@ const DateTime = (props: IFormProps) => {
                     : null;
                   field.onChange(timeStamp);
                 }}
-                dateFormat="yy-mm-dd"
+                dateFormat={format}
                 showIcon={showIcon}
                 placeholder={placeholder || defaultPlaceHolder}
                 minDate={minDateValue}
                 maxDate={maxDateValue}
                 appendTo={appendTo}
                 disabled={disabled}
+                view={view}
               />
             );
           }}
