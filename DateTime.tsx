@@ -60,7 +60,9 @@ const DateTime = (props: IFormProps) => {
 
   const labelElement = (
     <label htmlFor={attribute} className={labelClassName}>
-      {label} {required && "*"}
+      <span className="capitalize-first">
+        {label} {required && "*"}
+      </span>
     </label>
   );
   return (
