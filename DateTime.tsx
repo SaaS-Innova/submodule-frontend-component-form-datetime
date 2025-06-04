@@ -65,83 +65,88 @@ const DateTime = (props: IFormProps) => {
     <div className={fieldClassName}>
       {fieldType !== IFormFieldType.NO_LABEL && labelElement}
       <div className={divClassName}>
-        <Controller
-          name={attribute}
-          control={control}
-          rules={inputValidator(form[attribute].rules, label)}
-          render={({ field }) => {
-            const adjustDate = (type: string, amount: number) => {
-              const newDate = timestampToDate(field.value);
-              if (!newDate) return;
-              newDate.setDate(newDate.getDate() + amount);
-              field.onChange(newDate.getTime().toString());
-            };
-            return (
-              <div className="p-inputgroup relative">
-                <Calendar
-                  className={`w-full ${errors[attribute] ? "p-invalid" : ""}`}
-                  showTime={showTime}
-                  hourFormat="12"
-                  id={field.name}
-                  value={timestampToDate(field.value)}
-                  onChange={(e) => {
-                    const timeStamp = e.value
-                      ? new Date(Number(e.value)).getTime().toString()
-                      : null;
-                    field.onChange(timeStamp);
-                  }}
-                  dateFormat={format}
-                  showIcon={showIcon}
-                  placeholder={placeholder || defaultPlaceHolder}
-                  minDate={minDateValue}
-                  maxDate={maxDateValue}
-                  appendTo={appendTo}
-                  disabled={disabled}
-                  view={view}
-                />
-                {showAdjustButtons &&
-                  types.map(({ label, type }) => (
-                    <span
-                      key={type}
-                      className="absolute align-items-center flex justify-content-center border-round-2xl bg-red-400 border-transparent w-4rem h-full "
-                      style={{
-                        right: `${type == "day" ? "6.5rem" : "2.3rem"}`,
-                        zIndex: 1,
-                      }}
-                    >
-                      <i
-                        className="pi pi-minus text-white cursor-pointer"
-                        onClick={() => {
-                          if (type === "week") {
-                            adjustDate(type, -7);
-                          } else {
-                            adjustDate(type, -1);
-                          }
+        <div className={"flex  p-inputgroup"}>
+          <Controller
+            name={attribute}
+            control={control}
+            rules={inputValidator(form[attribute].rules, label)}
+            render={({ field }) => {
+              const adjustDate = (type: string, amount: number) => {
+                const newDate = timestampToDate(field.value);
+                if (!newDate) return;
+                newDate.setDate(newDate.getDate() + amount);
+                field.onChange(newDate.getTime().toString());
+              };
+              return (
+                <div className="p-inputgroup relative">
+                  <Calendar
+                    className={`w-full ${errors[attribute] ? "p-invalid" : ""}`}
+                    showTime={showTime}
+                    hourFormat="12"
+                    id={field.name}
+                    value={timestampToDate(field.value)}
+                    onChange={(e) => {
+                      const timeStamp = e.value
+                        ? new Date(Number(e.value)).getTime().toString()
+                        : null;
+                      field.onChange(timeStamp);
+                    }}
+                    dateFormat={format}
+                    showIcon={showIcon}
+                    placeholder={placeholder || defaultPlaceHolder}
+                    minDate={minDateValue}
+                    maxDate={maxDateValue}
+                    appendTo={appendTo}
+                    disabled={disabled}
+                    view={view}
+                  />
+                  {showAdjustButtons &&
+                    types.map(({ label, type }) => (
+                      <span
+                        key={type}
+                        className="absolute align-items-center flex justify-content-center border-round-2xl bg-red-400 border-transparent w-4rem h-full "
+                        style={{
+                          right: `${type == "day" ? "6.5rem" : "2.3rem"}`,
+                          zIndex: 1,
                         }}
-                        style={{ fontSize: "8px" }}
-                      />
-                      <span className="text-white" style={{ fontSize: "12px" }}>
-                        {" "}
-                        {label}{" "}
+                      >
+                        <i
+                          className="pi pi-minus text-white cursor-pointer"
+                          onClick={() => {
+                            if (type === "week") {
+                              adjustDate(type, -7);
+                            } else {
+                              adjustDate(type, -1);
+                            }
+                          }}
+                          style={{ fontSize: "8px" }}
+                        />
+                        <span
+                          className="text-white"
+                          style={{ fontSize: "12px" }}
+                        >
+                          {" "}
+                          {label}{" "}
+                        </span>
+                        <i
+                          className="pi pi-plus text-white cursor-pointer"
+                          onClick={() => {
+                            if (type === "week") {
+                              adjustDate(type, 7);
+                            } else {
+                              adjustDate(type, 1);
+                            }
+                          }}
+                          style={{ fontSize: "8px" }}
+                        />
                       </span>
-                      <i
-                        className="pi pi-plus text-white cursor-pointer"
-                        onClick={() => {
-                          if (type === "week") {
-                            adjustDate(type, 7);
-                          } else {
-                            adjustDate(type, 1);
-                          }
-                        }}
-                        style={{ fontSize: "8px" }}
-                      />
-                    </span>
-                  ))}
-              </div>
-            );
-          }}
-        />
-        <FormFieldError data={{ errors: errors, name: attribute }} />
+                    ))}
+                </div>
+              );
+            }}
+          />
+          <FormFieldError data={{ errors: errors, name: attribute }} />
+        </div>
       </div>
     </div>
   );
