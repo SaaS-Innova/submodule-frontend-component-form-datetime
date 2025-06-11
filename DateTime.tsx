@@ -8,7 +8,14 @@ import { useTranslation } from "react-i18next";
 import { useMemo } from "react";
 
 const DateTime = (props: IFormProps) => {
-  const { attribute, form, appendTo, fieldType, showAdjustButtons } = props;
+  const {
+    attribute,
+    form,
+    appendTo,
+    fieldType,
+    showAdjustButtons,
+    handleChange,
+  } = props;
   const { label, minDate, maxDate, placeholder } = form[attribute];
   const {
     required,
@@ -90,6 +97,7 @@ const DateTime = (props: IFormProps) => {
                         ? new Date(Number(e.value)).getTime().toString()
                         : null;
                       field.onChange(timeStamp);
+                      handleChange?.(e);
                     }}
                     dateFormat={format}
                     showIcon={showIcon}
@@ -104,10 +112,11 @@ const DateTime = (props: IFormProps) => {
                     types.map(({ label, type }) => (
                       <span
                         key={type}
-                        className="absolute align-items-center flex justify-content-center border-round-2xl bg-red-400 border-transparent w-4rem h-full "
+                        className="absolute align-items-center flex justify-content-center border-round-2xl bg-red-400 border-transparent  h-full "
                         style={{
-                          right: `${type == "day" ? "6.5rem" : "2.3rem"}`,
+                          right: `${type == "day" ? "4.9rem" : "2.1rem"}`,
                           zIndex: 1,
+                          width: "2.7rem",
                         }}
                       >
                         <i
@@ -119,11 +128,11 @@ const DateTime = (props: IFormProps) => {
                               adjustDate(type, -1);
                             }
                           }}
-                          style={{ fontSize: "8px" }}
+                          style={{ fontSize: "7px" }}
                         />
                         <span
                           className="text-white"
-                          style={{ fontSize: "12px" }}
+                          style={{ fontSize: "11px" }}
                         >
                           {" "}
                           {label}{" "}
@@ -137,7 +146,7 @@ const DateTime = (props: IFormProps) => {
                               adjustDate(type, 1);
                             }
                           }}
-                          style={{ fontSize: "8px" }}
+                          style={{ fontSize: "7px" }}
                         />
                       </span>
                     ))}
