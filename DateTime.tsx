@@ -16,6 +16,8 @@ const DateTime = (props: IFormProps) => {
     showAdjustButtons,
     handleChange,
   } = props;
+  const { isShowAdjustButtons = false, isButtonInside = true } =
+    showAdjustButtons || {};
   const { label, minDate, maxDate, placeholder } = form[attribute];
   const {
     required,
@@ -78,7 +80,7 @@ const DateTime = (props: IFormProps) => {
             control={control}
             rules={inputValidator(form[attribute].rules, label)}
             render={({ field }) => {
-              const adjustDate = (type: string, amount: number) => {
+              const adjustDate = (amount: number) => {
                 const newDate = timestampToDate(field.value);
                 if (!newDate) return;
                 newDate.setDate(newDate.getDate() + amount);
@@ -108,44 +110,37 @@ const DateTime = (props: IFormProps) => {
                     disabled={disabled}
                     view={view}
                   />
-                  {showAdjustButtons &&
+                  {isShowAdjustButtons &&
                     types.map(({ label, type }) => (
                       <span
                         key={type}
-                        className="absolute align-items-center flex justify-content-center border-round-2xl bg-red-400 border-transparent  h-full "
+                        className={`align-items-center flex justify-content-center border-round-2xl bg-red-400 border-transparent h-full ${
+                          isButtonInside ? "absolute" : ``
+                        }`}
                         style={{
-                          right: `${type == "day" ? "4.9rem" : "2.1rem"}`,
-                          zIndex: 1,
-                          width: "2.7rem",
+                          ...(isButtonInside
+                            ? {
+                                right: type === "day" ? "4.9rem" : "2.1rem",
+                                zIndex: 1,
+                                width: "2.7rem",
+                              }
+                            : { width: "60px" }),
                         }}
                       >
                         <i
                           className="pi pi-minus text-white cursor-pointer"
-                          onClick={() => {
-                            if (type === "week") {
-                              adjustDate(type, -7);
-                            } else {
-                              adjustDate(type, -1);
-                            }
-                          }}
+                          onClick={() => adjustDate(type === "week" ? -7 : -1)}
                           style={{ fontSize: "7px" }}
                         />
                         <span
                           className="text-white"
                           style={{ fontSize: "11px" }}
                         >
-                          {" "}
-                          {label}{" "}
+                          &nbsp;{label}&nbsp;
                         </span>
                         <i
                           className="pi pi-plus text-white cursor-pointer"
-                          onClick={() => {
-                            if (type === "week") {
-                              adjustDate(type, 7);
-                            } else {
-                              adjustDate(type, 1);
-                            }
-                          }}
+                          onClick={() => adjustDate(type === "week" ? 7 : 1)}
                           style={{ fontSize: "7px" }}
                         />
                       </span>
