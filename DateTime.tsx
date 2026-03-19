@@ -25,7 +25,7 @@ const DateTime = (props: IFormProps) => {
     disabled,
     showIcon = true,
     dateView,
-    showWeek = false,
+    showWeek = true,
   } = form[attribute].rules;
   const { view = "date", format = "yy-mm-dd" } = dateView || {};
   const {
