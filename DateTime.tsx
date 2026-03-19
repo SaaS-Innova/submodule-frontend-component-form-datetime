@@ -25,6 +25,7 @@ const DateTime = (props: IFormProps) => {
     disabled,
     showIcon = true,
     dateView,
+    showWeek = false,
   } = form[attribute].rules;
   const { view = "date", format = "yy-mm-dd" } = dateView || {};
   const {
@@ -109,6 +110,7 @@ const DateTime = (props: IFormProps) => {
                     appendTo={appendTo}
                     disabled={disabled}
                     view={view}
+                    showWeek={showWeek}
                   />
                   {isShowAdjustButtons &&
                     types.map(({ label, type }) => (
