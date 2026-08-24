@@ -5,9 +5,13 @@ import { IFormFieldType } from "../../../../library/utilities/constant";
 import { IFormProps } from "../formInterface/forms.model";
 import { FormFieldError } from "../formFieldError/FormFieldError";
 import { useTranslation } from "react-i18next";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 
-const DateTime = (props: IFormProps) => {
+interface IDateTimeProps extends Omit<IFormProps, "defaultTime"> {
+  defaultTime?: string;
+}
+
+const DateTime = (props: IDateTimeProps) => {
   const {
     attribute,
     form,
@@ -15,6 +19,7 @@ const DateTime = (props: IFormProps) => {
     fieldType,
     showAdjustButtons,
     handleChange,
+    defaultTime,
   } = props;
   const { isShowAdjustButtons = false, isButtonInside = true } =
     showAdjustButtons || {};
@@ -36,6 +41,11 @@ const DateTime = (props: IFormProps) => {
   const defaultPlaceHolder: string = t("components.multiSelect.placeholder");
   const minDateValue = minDate ? new Date(Number(minDate)) : undefined;
   const maxDateValue = maxDate ? new Date(Number(maxDate)) : undefined;
+
+  const [isDefaultTime, setIsDefaultTime] = useState(false);
+  useEffect(() => {
+    setIsDefaultTime(!!defaultTime);
+  }, [defaultTime]);
 
   // Function to convert timestamp to date
   const timestampToDate = (timestamp: any) => {
@@ -96,10 +106,39 @@ const DateTime = (props: IFormProps) => {
                     id={field.name}
                     value={timestampToDate(field.value)}
                     onChange={(e) => {
-                      const timeStamp = e.value
-                        ? new Date(Number(e.value)).getTime().toString()
-                        : null;
-                      field.onChange(timeStamp);
+                      if (!e.value) {
+                        setIsDefaultTime(!!defaultTime);
+                        field.onChange(null);
+                        handleChange?.(e);
+                        return;
+                      }
+
+                      const picked = new Date(Number(e.value));
+                      const previous = timestampToDate(field.value);
+                      const isDayChanged =
+                        !previous ||
+                        previous.getFullYear() !== picked.getFullYear() ||
+                        previous.getMonth() !== picked.getMonth() ||
+                        previous.getDate() !== picked.getDate();
+                      const isTypedInput = e.originalEvent?.type === "input";
+
+                      if (
+                        isDefaultTime &&
+                        isDayChanged &&
+                        !isTypedInput &&
+                        defaultTime
+                      ) {
+                        const [hours, minutes] = defaultTime
+                          .split(":")
+                          .map(Number);
+                        if (Number.isFinite(hours) && Number.isFinite(minutes)) {
+                          picked.setHours(hours, minutes, 0, 0);
+                        }
+                      } else if (!isDayChanged) {
+                        setIsDefaultTime(false);
+                      }
+
+                      field.onChange(picked.getTime().toString());
                       handleChange?.(e);
                     }}
                     dateFormat={format}
