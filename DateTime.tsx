@@ -7,9 +7,21 @@ import { FormFieldError } from "../formFieldError/FormFieldError";
 import { useTranslation } from "react-i18next";
 import { useEffect, useMemo, useState } from "react";
 
+export type ITimestampFormat = "HH:mm" | "HH:mm:ss" | "HH:mm:ss.SSS";
+
 interface IDateTimeProps extends Omit<IFormProps, "defaultTime"> {
   defaultTime?: string;
+  valueFormat?: ITimestampFormat;
 }
+
+// Normalizes an emitted value to the declared precision
+const truncateToFormat = (date: Date, valueFormat?: ITimestampFormat): Date => {
+  if (!valueFormat || valueFormat === "HH:mm:ss.SSS") return date;
+  const copy = new Date(date.getTime());
+  if (valueFormat === "HH:mm") copy.setSeconds(0, 0);
+  else copy.setMilliseconds(0);
+  return copy;
+};
 
 const DateTime = (props: IDateTimeProps) => {
   const {
@@ -20,6 +32,7 @@ const DateTime = (props: IDateTimeProps) => {
     showAdjustButtons,
     handleChange,
     defaultTime,
+    valueFormat,
   } = props;
   const { isShowAdjustButtons = false, isButtonInside = true } =
     showAdjustButtons || {};
@@ -33,6 +46,9 @@ const DateTime = (props: IDateTimeProps) => {
     showWeek = true,
   } = form[attribute].rules;
   const { view = "date", format = "yy-mm-dd" } = dateView || {};
+  const showSeconds =
+    valueFormat === "HH:mm:ss" || valueFormat === "HH:mm:ss.SSS";
+  const showMillisec = valueFormat === "HH:mm:ss.SSS";
   const {
     control,
     formState: { errors },
@@ -95,7 +111,9 @@ const DateTime = (props: IDateTimeProps) => {
                 const newDate = timestampToDate(field.value);
                 if (!newDate) return;
                 newDate.setDate(newDate.getDate() + amount);
-                field.onChange(newDate.getTime().toString());
+                field.onChange(
+                  truncateToFormat(newDate, valueFormat).getTime().toString(),
+                );
               };
               return (
                 <div className="p-inputgroup relative">
@@ -103,6 +121,8 @@ const DateTime = (props: IDateTimeProps) => {
                     className={`w-full ${errors[attribute] ? "p-invalid" : ""}`}
                     showTime={showTime}
                     hourFormat="12"
+                    showSeconds={showSeconds}
+                    showMillisec={showMillisec}
                     id={field.name}
                     value={timestampToDate(field.value)}
                     onChange={(e) => {
@@ -138,7 +158,11 @@ const DateTime = (props: IDateTimeProps) => {
                         setIsDefaultTime(false);
                       }
 
-                      field.onChange(picked.getTime().toString());
+                      field.onChange(
+                        truncateToFormat(picked, valueFormat)
+                          .getTime()
+                          .toString(),
+                      );
                       handleChange?.(e);
                     }}
                     dateFormat={format}
